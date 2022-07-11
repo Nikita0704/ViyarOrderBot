@@ -98,46 +98,55 @@ def process_mail_step(message):
 
 
 def next_step(message):
-    chat_id = message.chat.id
-    user = user_dict[chat_id]
-    user.deliveryAdress = message.text
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-    itembtn1 = types.KeyboardButton('Так')
-    itembtn2 = types.KeyboardButton('Ні')
+    try:
+        chat_id = message.chat.id
+        user = user_dict[chat_id]
+        user.deliveryAdress = message.text
+        markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+        itembtn1 = types.KeyboardButton('Так')
+        itembtn2 = types.KeyboardButton('Ні')
 
-    markup.add(itembtn1, itembtn2)
+        markup.add(itembtn1, itembtn2)
 
-    msg = bot.send_message(message.chat.id, 'Бажаєте додати зображення?', reply_markup=markup)
-    bot.register_next_step_handler(msg, choice)
+        msg = bot.send_message(message.chat.id, 'Бажаєте додати зображення?', reply_markup=markup)
+        bot.register_next_step_handler(msg, choice)
+    except Exception as e:
+        bot.reply_to(message, 'Щось пішло не так!')
 
 
 def choice(message):
-    if message.chat.type == 'private':
-        if message.text == 'Так':
-            chat_id = message.chat.id
-            user = user_dict[chat_id]
-            user.choice = message.text
+    try:
+        if message.chat.type == 'private':
+            if message.text == 'Так':
+                chat_id = message.chat.id
+                user = user_dict[chat_id]
+                user.choice = message.text
 
-            msg = bot.send_message(chat_id, 'Додайте фото')
-            bot.register_next_step_handler(msg, process_photo_step)
-        else:
-            chat_id = message.chat.id
-            user = user_dict[chat_id]
-            user.choice = message.text
+                msg = bot.send_message(chat_id, 'Додайте фото')
+                bot.register_next_step_handler(msg, process_photo_step)
+            else:
+                chat_id = message.chat.id
+                user = user_dict[chat_id]
+                user.choice = message.text
 
-            msg = bot.send_message(message.chat.id, 'Опишіть бажаний результат замовлення')
-            bot.register_next_step_handler(msg, process_orderDate_step)
+                msg = bot.send_message(message.chat.id, 'Опишіть бажаний результат замовлення')
+                bot.register_next_step_handler(msg, process_orderDate_step)
+    except Exception as e:
+        bot.reply_to(message, 'Щось пішло не так!')
 
 
 def process_photo_step(message):
-    chat_id = message.chat.id
-    user = user_dict[chat_id]
-    user.photo = message.text
+    try:
+        chat_id = message.chat.id
+        user = user_dict[chat_id]
+        user.photo = message.text
 
-    bot.send_photo(config.CHANNEL_ID, message.photo[-1].file_id, user.fullname)
+        bot.send_photo(config.CHANNEL_ID, message.photo[-1].file_id, user.fullname)
 
-    msg = bot.send_message(message.chat.id, 'Опишіть бажаний результат замовлення')
-    bot.register_next_step_handler(msg, process_orderDate_step)
+        msg = bot.send_message(message.chat.id, 'Опишіть бажаний результат замовлення')
+        bot.register_next_step_handler(msg, process_orderDate_step)
+    except Exception as e:
+        bot.reply_to(message, 'Щось пішло не так!')
 
 
 def process_orderDate_step(message):
@@ -146,7 +155,7 @@ def process_orderDate_step(message):
     user = user_dict[chat_id]
     user.orderDate = message.text
     # Ваша заявка
-    bot.send_message(chat_id, getRegData(user, 'Ваша заявка', message.from_user.first_name), parse_mode='Markdown')
+    bot.send_message(chat_id, getRegData(user, 'Ваша заявка', message.from_user.first_name + "\nНайближчим часом з вами зв'яжеться наш адміністратор"), parse_mode='Markdown')
     # Отправить в группу
     bot.send_message(config.CHANNEL_ID, getRegData(user, 'Заявка от бота', bot.get_me().username),
                      parse_mode='Markdown')
