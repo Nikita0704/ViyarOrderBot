@@ -26,7 +26,12 @@ def send_welcome(message):
     markup.add(item1)
 
     bot.send_message(message.chat.id,
-                     'Вітаю в боті для швидкого створення замовлення, {0.first_name}'.format(message.from_user),
+                     'Вітаємо вас у чат-боті швидкого замовлення виробів з металу!'
+                     'Щоб розрахувати вартість виробу та замовити його, натисніть на кнопку "Створити замовлення" '
+                     'і заповніть інформацію в декілька кроків.  '
+                     '\nЧим чіткіше ви опишете ваші побажання та прикріпите креслення і схеми, '
+                     'тим швидше наш спеціаліст зможе розрахувати вартість та виконати замовлення.'
+                     ''.format(message.from_user),
                      reply_markup=markup)
 
 
@@ -55,7 +60,7 @@ def process_city_step(message):
         bot.register_next_step_handler(msg, process_fullname_step)
 
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так1!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def process_fullname_step(message):
@@ -67,7 +72,7 @@ def process_fullname_step(message):
         msg = bot.send_message(chat_id, 'Вкажіть ваш номер телефону')
         bot.register_next_step_handler(msg, process_phone_step)
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def process_phone_step(message):
@@ -80,9 +85,8 @@ def process_phone_step(message):
 
         msg = bot.send_message(chat_id, 'Вкажіть свою електронну адресу')
         bot.register_next_step_handler(msg, process_mail_step)
-
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def process_mail_step(message):
@@ -94,7 +98,7 @@ def process_mail_step(message):
         msg = bot.send_message(chat_id, 'Вкажіть адресу')
         bot.register_next_step_handler(msg, next_step)
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def next_step(message):
@@ -111,7 +115,7 @@ def next_step(message):
         msg = bot.send_message(message.chat.id, 'Бажаєте додати зображення?', reply_markup=markup)
         bot.register_next_step_handler(msg, choice)
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def choice(message):
@@ -132,7 +136,7 @@ def choice(message):
                 msg = bot.send_message(message.chat.id, 'Опишіть бажаний результат замовлення')
                 bot.register_next_step_handler(msg, process_orderDate_step)
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def process_photo_step(message):
@@ -146,7 +150,7 @@ def process_photo_step(message):
         msg = bot.send_message(message.chat.id, 'Опишіть бажаний результат замовлення')
         bot.register_next_step_handler(msg, process_orderDate_step)
     except Exception as e:
-        bot.reply_to(message, 'Щось пішло не так!')
+        bot.reply_to(message, f'Щось пішло не так!\n Якщо далі бот не реагує на повідомлення, пропишіть команду "/start"')
 
 
 def process_orderDate_step(message):
@@ -155,7 +159,7 @@ def process_orderDate_step(message):
     user = user_dict[chat_id]
     user.orderDate = message.text
     # Ваша заявка
-    bot.send_message(chat_id, getRegData(user, 'Ваша заявка', message.from_user.first_name + "\nНайближчим часом з вами зв'яжеться наш адміністратор"), parse_mode='Markdown')
+    bot.send_message(chat_id, getRegData(user, 'Ваша заявка', message.from_user.first_name + "\nОчікуйте, найближчим часом з вами зв'яжеться наш менеджер"), parse_mode='Markdown')
     # Отправить в группу
     bot.send_message(config.CHANNEL_ID, getRegData(user, 'Заявка от бота', bot.get_me().username),
                      parse_mode='Markdown')
